@@ -87,6 +87,10 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
         customTapHandlers[type] = handler
     }
     
+    open func handleNormalTap(_ handler: @escaping () -> ()) {
+        normalTapHandler = handler
+    }
+    
     open func removeHandle(for type: ActiveType) {
         switch type {
         case .hashtag:
@@ -206,7 +210,7 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
                 selectedElement = nil
             }
         case .ended:
-            guard let selectedElement = selectedElement else { return avoidSuperCall }
+            guard let selectedElement = selectedElement else { didTapNormal() return avoidSuperCall }
             
             switch selectedElement.element {
             case .mention(let userHandle): didTapMention(userHandle)
@@ -241,6 +245,7 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
     internal var hashtagTapHandler: ((String) -> ())?
     internal var urlTapHandler: ((URL) -> ())?
     internal var customTapHandlers: [ActiveType : ((String) -> ())] = [:]
+    internal var normalTapHandler: (() -> ())?
     
     fileprivate var mentionFilterPredicate: ((String) -> Bool)?
     fileprivate var hashtagFilterPredicate: ((String) -> Bool)?
@@ -509,6 +514,13 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
             return
         }
         elementHandler(element)
+    }
+    
+    fileprivate func didTapNormal() {
+        guard let normalHandler = normalTapHandler else {
+            return
+        }
+        normalHandler()
     }
 }
 
