@@ -210,7 +210,7 @@ typealias ElementTuple = (range: NSRange, element: ActiveElement, type: ActiveTy
                 selectedElement = nil
             }
         case .ended:
-            guard let selectedElement = selectedElement else { didTapNormal() return avoidSuperCall }
+            guard let selectedElement = selectedElement else { didTapNormal(); return avoidSuperCall }
             
             switch selectedElement.element {
             case .mention(let userHandle): didTapMention(userHandle)
